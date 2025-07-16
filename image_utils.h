@@ -18,7 +18,10 @@ struct ImageData {
 
 // Function declarations
 ImageData loadImage(const char* imagePath);
-std::vector<unsigned char> convertToGrayscale(const ImageData& img);
+void convertToGrayscale(const ImageData& img, std::vector<unsigned char>& grayData);
+void convertToBinary(const std::vector<unsigned char>& grayData, 
+                     int width, int height, std::vector<unsigned char>& binaryData,
+                     unsigned char threshold = 128);
 bool saveGrayscaleImage(const std::vector<unsigned char>& grayData, 
                         int width, int height, const char* outputPath);
 

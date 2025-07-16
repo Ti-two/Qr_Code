@@ -27,10 +27,10 @@ ImageData loadImage(const char* imagePath) {
     return img;
 }
 
-// Function to convert image to grayscale with memory optimization
-std::vector<unsigned char> convertToGrayscale(const ImageData& img) {
-    // Create optimized array for grayscale levels
-    std::vector<unsigned char> grayData(img.width * img.height);
+// Function to convert image to grayscale with memory optimization (in-place)
+void convertToGrayscale(const ImageData& img, std::vector<unsigned char>& grayData) {
+    // Resize the output vector to the correct size
+    grayData.resize(img.width * img.height);
     
     if (img.channels > 1) {
         std::cout << "Converting to grayscale with memory optimization" << std::endl;
@@ -57,8 +57,33 @@ std::vector<unsigned char> convertToGrayscale(const ImageData& img) {
             grayData[i] = img.data[i];
         }
     }
+}
+
+// Function to convert grayscale to binary (black and white) - in-place
+void convertToBinary(const std::vector<unsigned char>& grayData, 
+                     int width, int height, std::vector<unsigned char>& binaryData,
+                     unsigned char threshold) {
+    // Resize the output vector to the correct size
+    binaryData.resize(width * height);
     
-    return grayData;
+    std::cout << "Converting to binary (black & white) with threshold: " << (int)threshold << std::endl;
+    
+    int blackPixels = 0, whitePixels = 0;
+    
+    for (int i = 0; i < width * height; ++i) {
+        if (grayData[i] < threshold) {
+            binaryData[i] = 0;      // Black
+            blackPixels++;
+        } else {
+            binaryData[i] = 255;    // White
+            whitePixels++;
+        }
+    }
+    
+    std::cout << "Binary conversion complete:" << std::endl;
+    std::cout << "- Black pixels: " << blackPixels << std::endl;
+    std::cout << "- White pixels: " << whitePixels << std::endl;
+    std::cout << "- Black ratio: " << (float)blackPixels / (width * height) * 100 << "%" << std::endl;
 }
 
 // Function to save grayscale image
