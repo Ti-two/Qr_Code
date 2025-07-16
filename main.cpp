@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "image_utils.h"
 
 int main(int argc, char** argv) {
     if (argc < 2) {
@@ -10,35 +8,32 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // Chemin vers l'image QR code
     const char* imagePath = argv[1];
     
-    int width, height, channels;
-    
-    // Charger l'image QR code
-    unsigned char* imageData = stbi_load(imagePath, &width, &height, &channels, 0);
-    
-    if (!imageData) {
-        std::cerr << "Erreur: Impossible de charger l'image " << imagePath << std::endl;
-        std::cerr << "Raison: " << stbi_failure_reason() << std::endl;
+    // Load the image
+    ImageData img = loadImage(imagePath);
+    if (!img.data) {
         return 1;
     }
     
-    std::cout << "Image QR code chargée avec succès:" << std::endl;
-    std::cout << "- Dimensions: " << width << "x" << height << " pixels" << std::endl;
-    std::cout << "- Canaux couleur: " << channels << std::endl;
+    // Convert to grayscale
+    std::vector<unsigned char> grayData = convertToGrayscale(img);
     
-    // Les données de l'image sont maintenant dans imageData
-    // Chaque pixel occupe 'channels' octets
-    // Pour traitement ultérieur du QR code...
+    // Free the original image - we don't need it anymore!
+    stbi_image_free(img.data);
     
-    // Exemple: convertir en niveaux de gris si nécessaire
-    if (channels > 1) {
-        std::cout << "Image en couleur détectée, conversion possible en niveaux de gris" << std::endl;
+    // Save the grayscale image
+    std::string outputPath = "output_grayscale.png";
+    bool success = saveGrayscaleImage(grayData, img.width, img.height, outputPath.c_str());
+    
+    if (!success) {
+        return 1;
     }
     
-    // Libérer la mémoire
-    stbi_image_free(imageData);
+    // Now you can use grayData for QR code processing
+    // Access pixel at (x, y): grayData[y * width + x]
+    
+    std::cout << "Optimized data ready for QR code processing" << std::endl;
     
     return 0;
 }

@@ -10,7 +10,7 @@ CXXFLAGS = -std=c++11 -Wall
 TARGET = qrcode_scanner
 
 # Fichiers sources
-SOURCES = main.cpp
+SOURCES = main.cpp image_utils.cpp
 
 # Chemin vers l'image de test
 QRCODE_DIR = Qrcode
